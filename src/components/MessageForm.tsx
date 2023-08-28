@@ -1,6 +1,9 @@
+import { useRouter } from "next/router";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setChatId } from "~/store/chatSlice";
 import { api } from "~/utils/api";
+import { useQueryClient } from "@tanstack/react-query";
 type StateType = {
   chat: string;
 };
@@ -8,20 +11,36 @@ type StateType = {
 const MessageForm = () => {
   const [message, setMes] = useState<string>("");
   const newMess = api.AskAi.askAi.useMutation();
+  const router = useRouter();
   const chatId = useSelector((state: StateType) => state.chat);
+  const dispatch = useDispatch();
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     if (newMess.error) {
       console.log(newMess.error);
       return;
     }
-    newMess.mutate({ message: message, chatId: chatId || undefined });
+    newMess.mutate(
+      {
+        message: message,
+        chatId: chatId || undefined,
+      },
+      {
+        onSuccess: (data) => {
+          router.push(`/chat/${data?.id}`);
+          dispatch(setChatId(data?.id));
+          
+        },
+      }
+    );
+    // test.mutate();
+    setMes("");
   };
 
   return (
-    <div className="fixed bottom-0 w-3/4 bg-slate-600 md:w-5/6">
+    <div className="fixed bottom-0 flex h-1/6 w-3/4 bg-slate-600 md:w-5/6">
       <div
-        className="relative mx-auto my-4 w-2/3 rounded-2xl border-solid
+        className="relative m-auto w-2/3 rounded-2xl border-solid
             border-slate-600"
       >
         <form id="form" onSubmit={handleSubmit}>
@@ -31,11 +50,12 @@ const MessageForm = () => {
                 setMes(event.currentTarget.value);
               }}
               id="messInput"
+              value={message}
               tabIndex={0}
               rows={1}
-              className="m-0 max-h-40 w-full resize-none overflow-y-hidden
+              className="my-auto max-h-40 w-full resize-none overflow-y-hidden
                     rounded-2xl border-0 bg-transparent p-2
-                     pl-3 pr-10 align-middle placeholder:text-slate-200
+                     pl-3 pr-10 align-middle placeholder:text-slate-100
                      focus:outline-none md:pl-0 md:pr-12"
               placeholder="Câu hỏi của bạn"
               onKeyDown={(e) => {

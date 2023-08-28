@@ -10,7 +10,9 @@ const LayOut: React.FC<LayOutProps> = ({ children }) => {
         <SideBar></SideBar>
       </div>
       <div className="ml-auto flex h-screen w-3/4 flex-col bg-slate-400 lg:w-5/6">
-        <div className="fixed flex-grow overflow-scroll">{children}</div>
+        <div className="fixed h-full w-3/4 flex-grow md:w-5/6">
+          {children}
+        </div>
         <MessageForm />
       </div>
     </main>

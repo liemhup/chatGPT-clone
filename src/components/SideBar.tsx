@@ -18,14 +18,12 @@ const SideBar = () => {
         const updatedChats = oldData?.filter(
           (chat) => chat.id !== deletedChat.id
         );
+        if (updatedChats?.length === 0) router.push("/");
         return updatedChats;
       });
     },
   });
-  const chats = api.AskAi.chats.useQuery(undefined, {
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const chats = api.AskAi.chats.useQuery();
 
   return (
     <div className="flex h-full flex-col bg-slate-700">
@@ -63,7 +61,7 @@ const SideBar = () => {
                 className="group mx-2 flex justify-between rounded-md hover:bg-slate-400"
                 onClick={() => dispatch(setChatId(chat.id))}
               >
-                <button type="button" className="m-2 h-8 p-2">
+                <button type="button" className="m-2 h-8 overflow-hidden p-2">
                   <Link href={`/chat/${chat.id}`} className="flex gap-4">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -79,9 +77,7 @@ const SideBar = () => {
                         d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 011.037-.443 48.282 48.282 0 005.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
                       />
                     </svg>
-                    <span className="max-h-8 overflow-hidden break-all">
-                      {chat.title}
-                    </span>
+                    <span className="max-h-8">{chat.title}</span>
                   </Link>
                 </button>
                 <div className="hidden group-hover:flex">
